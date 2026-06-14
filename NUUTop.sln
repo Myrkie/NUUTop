@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NUUTop", "NUUTop\NUUTop.csproj", "{CBD526D6-27AB-4BD6-A12D-ABE2862EB7A0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{3781331F-3244-4364-A99A-57E45ECE44E0}"
+	ProjectSection(SolutionItems) = preProject
+		build.bat = build.bat
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Builds", "Builds", "{BB086DB7-DBF4-4031-86CA-5AC23C3DEA49}"
+	ProjectSection(SolutionItems) = preProject
+		Builds\Android\NUUTop = Builds\Android\NUUTop
+		Builds\Android\NUUTop.dbg = Builds\Android\NUUTop.dbg
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CBD526D6-27AB-4BD6-A12D-ABE2862EB7A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBD526D6-27AB-4BD6-A12D-ABE2862EB7A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBD526D6-27AB-4BD6-A12D-ABE2862EB7A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBD526D6-27AB-4BD6-A12D-ABE2862EB7A0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{BB086DB7-DBF4-4031-86CA-5AC23C3DEA49} = {3781331F-3244-4364-A99A-57E45ECE44E0}
+	EndGlobalSection
+EndGlobal

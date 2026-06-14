@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <Version>1.0.1</Version>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <PublishAot>true</PublishAot>
+        <InvariantGlobalization>true</InvariantGlobalization>
+        <RuntimeIdentifier>linux-bionic-arm64</RuntimeIdentifier>
+
+        <DisableUnsupportedError>true</DisableUnsupportedError>
+        <PublishAotUsingRuntimePack>true</PublishAotUsingRuntimePack>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Spectre.Console" Version="0.57.0" />
+      <PackageReference Include="System.CommandLine" Version="3.0.0-preview.5.26302.115" />
+    </ItemGroup>
+
+</Project>
