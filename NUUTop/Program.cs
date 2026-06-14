@@ -121,24 +121,19 @@ namespace NUUTop
             var table = new Table().Border(TableBorder.Rounded).Expand();
 
             table.AddColumn(new TableColumn("[bold]Sensor[/]")
-                .Width(12)
-                .NoWrap());
+                .Width(12).NoWrap());
             table.AddColumn(new TableColumn("[bold]Current State[/]")
-                .Width(20)
-                .NoWrap());
+                .Width(20).NoWrap());
             table.AddColumn(new TableColumn("[bold]Trend[/]")
-                .Width(5)
-                .NoWrap());
+                .Width(5).NoWrap());
             table.AddColumn(new TableColumn("[bold]Previous[/]")
-                .Width(8)
-                .NoWrap());
+                .Width(8).NoWrap());
 
             int battery = ReadInt("/sys/class/power_supply/battery/capacity");
             string batteryStatus = ReadFile("/sys/class/power_supply/battery/status");
-
-            string batteryArrow = Compare(battery.ToString(), previousBattery);
-
-            table.AddRow("[green]Battery[/]", $"[bold]{battery}%[/] ({batteryStatus})",
+            string batteryArrow = ArrowCompute(battery.ToString(), previousBattery);
+            
+            table.AddRow("[green]Battery[/]", $"[bold]{battery}%[/] ({batteryStatus})", 
                 ColorArrow(batteryArrow), previousBattery == null ? "-" : $"{previousBattery}%");
 
             previousBattery = battery.ToString();
@@ -148,7 +143,7 @@ namespace NUUTop
                 string current = ReadTemperature(name);
                 string previous = PreviousTemps[name];
 
-                string arrow = string.IsNullOrEmpty(previous) ? "-" : Compare(current, previous);
+                string arrow = string.IsNullOrEmpty(previous) ? "-" : ArrowCompute(current, previous);
 
                 table.AddRow(name, FormatTemp(current), ColorArrow(arrow), previous == "" ? "-" : FormatTemp(previous));
 
@@ -291,8 +286,7 @@ namespace NUUTop
 
         private static void DumpThermalZones()
         {
-            var table = new Table()
-                .Border(TableBorder.Rounded);
+            var table = new Table().Border(TableBorder.Rounded);
 
             table.AddColumn("Zone");
             table.AddColumn("Type");
@@ -303,37 +297,29 @@ namespace NUUTop
             {
                 string zone = Path.GetFileName(dir);
 
-                string type =
-                    ReadFile(Path.Combine(dir, "type"));
+                string type = ReadFile(Path.Combine(dir, "type"));
 
-                string tempPath =
-                    Path.Combine(dir, "temp");
+                string tempPath = Path.Combine(dir, "temp");
 
                 if (!int.TryParse(ReadFile(tempPath), out var raw))
                     continue;
 
-                bool valid =
-                    TryGetTemperature(raw, out var temp);
+                bool valid = TryGetTemperature(raw, out var temp);
 
                 if (!valid && !_showInvalidTemps)
                     continue;
 
                 temp = NormalizeTemperature(raw);
 
-                string mapped =
-                    NuuThermalMap.FirstOrDefault(x => x.Value == type).Key ?? "";
+                string mapped = NuuThermalMap.FirstOrDefault(x => x.Value == type).Key ?? "";
 
-                table.AddRow(
-                    zone,
-                    type,
-                    $"{temp:0.0}°C",
-                    mapped);
+                table.AddRow(zone, type, $"{temp:0.0}°C", mapped);
             }
 
             AnsiConsole.Write(table);
         }
 
-        private static string Compare(string current, string? previous)
+        private static string ArrowCompute(string current, string? previous)
         {
             if (string.IsNullOrEmpty(previous))
                 return "-";
@@ -362,8 +348,7 @@ namespace NUUTop
         private static int ReadInt(string path)
         {
             return int.TryParse(ReadFile(path), out var value)
-                ? value
-                : 0;
+                ? value : 0;
         }
 
         private static string GetProp(string property)
