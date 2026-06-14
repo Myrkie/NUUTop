@@ -20,7 +20,7 @@ namespace NUUTop
             ["Battery"] = "mtktsbattery",     // battery
             ["Charger"] = "mtktscharger",     // charger
             ["PMIC"] = "mtktspmic",           // power management
-            ["RF_PA"] = "mtktspa",            // power amplifier
+            ["RF_PA"] = "mtktspa",            // RF power amplifier
             ["Wireless"] = "mtktswmt",        // Wi-Fi bluetooth modem
             ["Modem_MD_PA"] = "mtktsbtsmdpa", // modem power amplifier
             ["Modem_NR_PA"] = "mtktsbtsnrpa"  // modem power amplifier duel sim
