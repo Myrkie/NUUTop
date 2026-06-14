@@ -11,7 +11,6 @@ namespace NUUTop
         
         private static string? _lastBatteryTemp;
         private static bool _showInvalidTemps;
-        private static readonly CancellationTokenSource Cts = new();
         
         private static readonly Dictionary<string, string> NuuThermalMap = new()
         {
@@ -33,13 +32,6 @@ namespace NUUTop
 
         private static async Task<int> Main(string[] args)
         {
-            Console.CancelKeyPress += (_, e) =>
-            {
-                e.Cancel = true;
-                Cts.Cancel();
-                AnsiConsole.Cursor.Show();
-            };
-            
             var invalidOption = new Option<bool>("--show-invalid", "-si")
             {
                 Description = "Show thermal zones with invalid values. (-127)"
@@ -93,14 +85,13 @@ namespace NUUTop
 
                             var panel = new Panel(table)
                                 .Header("[bold cyan]NUUTop[/]")
-                                .Border(BoxBorder.Rounded)
-                                .Expand();
+                                .Border(BoxBorder.Rounded);
 
                             ctx.UpdateTarget(new Rows(new Markup($"[bold yellow]Device:[/] {device}"), panel));
 
                             ctx.Refresh();
 
-                            Thread.Sleep(1000);
+                            cancellationToken.WaitHandle.WaitOne(1000);
                         }
                     });
                     return Task.CompletedTask;
@@ -109,6 +100,10 @@ namespace NUUTop
                 catch (Exception exception)
                 {
                     return Task.FromException(exception);
+                }
+                finally
+                {
+                    AnsiConsole.Cursor.Show();
                 }
             });
 
@@ -125,10 +120,18 @@ namespace NUUTop
         {
             var table = new Table().Border(TableBorder.Rounded).Expand();
 
-            table.AddColumn("[bold]Sensor[/]");
-            table.AddColumn("[bold]Current State[/]");
-            table.AddColumn("[bold]Trend[/]");
-            table.AddColumn("[bold]Previous[/]");
+            table.AddColumn(new TableColumn("[bold]Sensor[/]")
+                .Width(12)
+                .NoWrap());
+            table.AddColumn(new TableColumn("[bold]Current State[/]")
+                .Width(20)
+                .NoWrap());
+            table.AddColumn(new TableColumn("[bold]Trend[/]")
+                .Width(5)
+                .NoWrap());
+            table.AddColumn(new TableColumn("[bold]Previous[/]")
+                .Width(8)
+                .NoWrap());
 
             int battery = ReadInt("/sys/class/power_supply/battery/capacity");
             string batteryStatus = ReadFile("/sys/class/power_supply/battery/status");
