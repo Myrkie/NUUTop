@@ -8,8 +8,14 @@ set CONFIG=Release
 set ROOT=%~dp0
 set BUILDS=%ROOT%Builds
 
-REM --- Android SDK (generic)
+REM --- Android SDK
 set "ANDROID_SDK_ROOT=%LOCALAPPDATA%\Android\Sdk"
+
+REM --- Android NDK
+set "ANDROID_NDK_ROOT=%ANDROID_SDK_ROOT%\ndk\30.0.14904198"
+set "LLVM_BIN=%ANDROID_NDK_ROOT%\toolchains\llvm\prebuilt\windows-x86_64\bin"
+
+set "PATH=%LLVM_BIN%;%PATH%"
 
 REM ============================
 REM PREPARE OUTPUT DIRS

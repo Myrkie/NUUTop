@@ -81,13 +81,18 @@ namespace NUUTop
                     {
                         while (!cancellationToken.IsCancellationRequested)
                         {
-                            var table = BuildTable(ref previousBattery);
+                            var thermalTable = BuildTable(ref previousBattery);
+                            var chargingTable = BuildChargingTable();
 
-                            var panel = new Panel(table)
-                                .Header("[bold cyan]NUUTop[/]")
-                                .Border(BoxBorder.Rounded);
-
-                            ctx.UpdateTarget(new Rows(new Markup($"[bold yellow]Device:[/] {device}"), panel));
+                            ctx.UpdateTarget(new Rows(
+                                new Markup($"[bold yellow]Device:[/] {device}"),
+                                new Panel(chargingTable)
+                                    .Header("[bold green]Charging Info[/]")
+                                    .Border(BoxBorder.Rounded),
+                                new Panel(thermalTable)
+                                    .Header("[bold cyan]NUUTop[/]")
+                                    .Border(BoxBorder.Rounded)
+                            ));
 
                             ctx.Refresh();
 
@@ -112,8 +117,17 @@ namespace NUUTop
 
         private static Rows BuildLayout(string device, string? previousBattery)
         {
-            return new Rows(new Markup($"[bold yellow]Device:[/] {device}"), new Panel(BuildTable(ref previousBattery))
-                .Header("[bold cyan]NUUTop[/]").Border(BoxBorder.Rounded).Expand());
+            return new Rows(
+                new Markup($"[bold yellow]Device:[/] {device}"),
+                new Panel(BuildTable(ref previousBattery))
+                    .Header("[bold cyan]NUUTop[/]")
+                    .Border(BoxBorder.Rounded)
+                    .Expand(),
+                new Panel(BuildChargingTable())
+                    .Header("[bold green]Charging Status[/]")
+                    .Border(BoxBorder.Rounded)
+                    .Expand()
+            );
         }
 
         private static Table BuildTable(ref string? previousBattery)
@@ -152,7 +166,30 @@ namespace NUUTop
 
             return table;
         }
+        
+        private static Table BuildChargingTable()
+        {
+            var table = new Table()
+                .Border(TableBorder.Rounded)
+                .Expand();
 
+            table.AddColumn("[bold]Status[/]");
+            table.AddColumn("[bold]Current[/]");
+            table.AddColumn("[bold]Voltage[/]");
+            table.AddColumn("[bold]Power[/]");
+
+            var (status, currentMa, voltageV, watts) = GetChargingMetrics();
+
+            table.AddRow(
+                status,
+                $"{currentMa:0} mA",
+                $"{voltageV:0.00} V",
+                $"{watts:0.00} W"
+            );
+
+            return table;
+        }
+        
         private static string FormatTemp(string value)
         {
             return value == "----"
@@ -234,7 +271,26 @@ namespace NUUTop
             return fallback;
 
         }
+        
+        private static (string status, double currentMa, double voltageV, double watts) GetChargingMetrics()
+        {
+            try
+            {
+                long currentUa = long.Parse(ReadFile("/sys/class/power_supply/battery/current_now"));
+                long voltageUv = long.Parse(ReadFile("/sys/class/power_supply/battery/voltage_now"));
+                string status = ReadFile("/sys/class/power_supply/battery/status");
 
+                double currentMa = Math.Abs(currentUa) / 1000.0;
+                double voltageV = voltageUv / 1_000_000.0;
+                double watts = Math.Abs(currentUa) * voltageUv / 1_000_000_000_000.0;
+
+                return (status, currentMa, voltageV, watts);
+            }
+            catch
+            {
+                return ("----", 0, 0, 0);
+            }
+        }
         private static string ReadThermalTemperature(string name)
         {
             string? zone = FindThermalZone(name);
